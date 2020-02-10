@@ -1,5 +1,8 @@
 # todolist_test.rb
 
+require 'simplecov'
+SimpleCov.start
+
 require 'minitest/autorun'
 require "minitest/reporters"
 Minitest::Reporters.use!
@@ -178,5 +181,44 @@ class TodoListTest < MiniTest::Test
 
     assert_instance_of(TodoList, result_list)
     assert_equal(new_list.to_a, result_list.to_a)
+  end
+
+  def test_find_by_title
+    assert_equal(@todo1, @list.find_by_title("Buy milk"))
+    assert_equal(@todo2, @list.find_by_title("Clean room"))
+    assert_equal(@todo3, @list.find_by_title("Go to gym"))
+    assert_equal(nil, @list.find_by_title("Bake bread"))
+  end
+
+  def test_all_done
+    assert_equal([], @list.all_done.to_a)
+    @todo1.done!
+    @todo3.done!
+    assert_equal([@todo1, @todo3], @list.all_done.to_a)
+  end
+
+  def test_all_not_done
+    assert_equal([@todo1, @todo2, @todo3], @list.all_not_done.to_a)
+    @todo1.done!
+    assert_equal([@todo2, @todo3], @list.all_not_done.to_a)
+  end
+
+  def test_mark_done
+    assert_equal(false, @todo1.done?)
+    @list.mark_done("Buy milk")
+    assert_equal(true, @todo1.done?)
+  end
+
+  def test_mark_all_done
+    assert_equal(false, [@todo1, @todo2, @todo3].all? { |todo| todo.done? })
+    @list.mark_all_done
+    assert_equal(true, [@todo1, @todo2, @todo3].all? { |todo| todo.done? })
+  end
+
+  def test_mark_all_undone
+    [@todo1, @todo2, @todo3].each { |todo| todo.done! }
+    assert_equal(true, [@todo1, @todo2, @todo3].all? { |todo| todo.done? })
+    @list.mark_all_undone
+    assert_equal(true, [@todo1, @todo2, @todo3].all? { |todo| !todo.done? })
   end
 end
