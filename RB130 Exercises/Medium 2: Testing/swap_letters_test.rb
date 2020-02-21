@@ -38,7 +38,16 @@ class TextTest < Minitest::Test
     assert_equal(ae_indexes, e_indexes)
   end
 
+  def test_word_count
+    expected_word_count = @file_data.split.size
+    sample_text = Text.new(@file_data)
+    actual_word_count = sample_text.word_count
+
+    assert_equal(expected_word_count, actual_word_count)
+  end
+
   def teardown
     @file.close
+    puts "File has been closed: #{@file.closed?}"
   end
 end
